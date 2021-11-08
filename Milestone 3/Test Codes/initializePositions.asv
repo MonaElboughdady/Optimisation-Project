@@ -1,0 +1,20 @@
+function [points] = initializePositions(r,n)
+
+radiusofBigCircle = (pi*r)/(n-pi);
+centerofCircle = ceil(radiusofBigCircle + 2*r);
+centerofCirclePoint = [centerofCircle centerofCircle];
+separationAngle = floor(360/n);
+for i = 1:n
+    pointonCircle = [r*sind((i-1)*separationAngle) r*cosd((i-1)*separationAngle)]
+    points = [points
+              radiusofBigCircle radiusofBigCircle
+    
+    
+    
+end
+
+
+
+
+
+end

@@ -1,8 +1,6 @@
 import time
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.animation as anim
-plt.ion()
+from vispy.plot import Fig
 
 max_num_iter = 1000
 T_init = 1000
@@ -12,8 +10,9 @@ alpha = 0.9
 linear_cooling = 1
 check_probability = 1
 init_sol = np.random.uniform(-10,10)
-
-
+fig = Fig(size=(1000,1000),show=False)
+ax1 = fig[0,0]
+ax2 = fig[0,1]
 
 # def animate(i):
 
@@ -25,14 +24,10 @@ def target_function(x):
 
 
 def main():
-    print(beta)
-    fig = plt.figure()
-    ax1 = fig.add_subplot(1,2,1)
-    ax2 = fig.add_subplot(1,2,2)
     x = np.linspace(-10,10,10000)
     y = target_function(x)
     ax1.plot(x,y)
-    plt.show(block = False)
+    fig.show(run=True)
 
     curr_iter = 0
     curr_solution = init_sol
@@ -54,10 +49,6 @@ def main():
             best_solution = curr_solution
         T_current -= beta
         print(curr_solution)
-        ax1.scatter(curr_solution,target_function(curr_solution))
-        ax2.scatter(curr_iter,T_current)
-        fig.canvas.draw()
-        fig.canvas.flush_events()
         # print(T_current)
         # time.sleep(0.001)
         curr_iter+=1
