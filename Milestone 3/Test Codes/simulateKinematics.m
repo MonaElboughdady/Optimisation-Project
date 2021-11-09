@@ -1,4 +1,6 @@
 function [posArray,velArray] = simulateKinematics(Robot,Controller,Map,visualize)
+disp("Entered Simulation")
+tic;
 goalRadius = Map.goalRadius;
 sampleTime = Controller.sampleTime;
 distanceToGoal = cellfun(@norm,num2cell(Robot.initPosition - Map.goals,2));
@@ -61,5 +63,5 @@ while(distanceToGoal > goalRadius)
     end
     
 end
-
+toc
 end

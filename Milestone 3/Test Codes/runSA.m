@@ -9,45 +9,59 @@ SA.passInitialSolution = false;
 SA.passNewSolution = false;
 SA.cost = 0;
 SA.newCost = 0;
+SA.costs = [];
+SA.randomRange = 20;
+figure
+set(gcf, 'WindowState', 'maximized');
+disp("Initial Solution")
 while(~SA.passInitialSolution)
     for i = 1:Robot.number
-        Controller.controllers{1,i}.Waypoints = [Robot.initPosition(i,:)
+        Controller.controllers{1,i}.Waypoints = min(max([Robot.initPosition(i,:)
             rand(Map.numberofPathsPoints-2,2) .* Map.size
-            Map.goals(i,:)];
+            Map.goals(i,:)],0),Map.size);
         SA.currentSol(:,:,i) = Controller.controllers{1,i}.Waypoints;
     end
     [pos,vel] = simulateKinematics(Robot,Controller,Map,false);
-    SA.passInitialSolution = true;
-    for i = 1:Robot.number
-        SA.passInitialSolution = SA.passInitialSolution && checkPointFeasibility(squeeze(pos(:,:,1)),Map);
-    end
+%     SA.passInitialSolution = true;
+%     for i = 1:Robot.number
+%         SA.passInitialSolution = SA.passInitialSolution && checkPointFeasibility(squeeze(pos(:,:,1)),Map);
+%     end
     
-    SA.cost = calculateCostFunction(pos,Robot);
+    SA.cost = calculateCostFunction(pos,vel,Robot,Map,Controller,4);
     
 end
 
+disp("Iterations")
 for iteration = 1:SA.maxNumofIterations
-    SA.passNewSolution = true;
-    pos = [];
-    vel = [];
-    while(~SA.passNewSolution)
-        for i = 1:Robot.number
-            Controller.controllers{1,i}.Waypoints = [Robot.initPosition(i,:)
-                (rand(Map.numberofPathsPoints-2,2) .* 2)-1
-                Map.goals(i,:)];
-        end
-        for i = 1:Robot.number
-            SA.passNewSolution = SA.passNewSolution && checkPointFeasibility(Controller.controllers{1,i}.Waypoints,Map);
-        end
-        if(SA.passNewSolution)
-            return
-        end
-        [pos,vel] = simulateKinematics(Robot,Controller,Map,false);
-        for i = 1:Robot.number
-            SA.passInitialSolution = SA.passInitialSolution && checkPointFeasibility(squeeze(pos(:,:,1)),Map);
-        end
+    
+    for i = 1:Robot.number
+        Controller.controllers{1,i}.Waypoints = min(max(Controller.controllers{1,i}.Waypoints - [0 0
+            (rand(Map.numberofPathsPoints-2,2) .* SA.randomRange)-floor(SA.randomRange/2)
+            0 0],0),Map.size);
     end
-    SA.newCost = calculateCostFunction(pos,Robot);
+    %
+    %     while(~SA.passNewSolution)
+    %         %         disp("Entered new solution")
+    %         SA.passNewSolution = true;
+    %         for i = 1:Robot.number
+    %             Controller.controllers{1,i}.Waypoints = min(max(Controller.controllers{1,i}.Waypoints - [0 0
+    %                 (rand(Map.numberofPathsPoints-2,2) .* 2)-1
+    %                 0 0],0),Map.size);
+    %         end
+    %         for i = 1:Robot.number
+    %             SA.passNewSolution = SA.passNewSolution && checkPathFeasibility(Controller.controllers{1,i}.Waypoints,Map);
+    %             SA.passNewSolution
+    %         end
+    %         if(~SA.passNewSolution)
+    %             continue
+    %         end
+    %         [pos,vel] = simulateKinematics(Robot,Controller,Map,false);
+    %         for i = 1:Robot.number
+    %             SA.passInitialSolution = SA.passInitialSolution && checkPointFeasibility(squeeze(pos(:,:,1)),Map);
+    %         end
+    %     end
+    [pos,vel] = simulateKinematics(Robot,Controller,Map,false);
+    SA.newCost = calculateCostFunction(pos,vel,Robot,Map,Controller,4);
     if(SA.newCost < SA.cost)
         SA.cost = SA.newCost;
         for i = 1:Robot.number
@@ -56,7 +70,9 @@ for iteration = 1:SA.maxNumofIterations
     else
         Controller.controllers{1,i}.Waypoints = SA.currentSol(:,:,i);
     end
-    disp(iteration,SA.cost)
+    SA.costs = [SA.costs SA.cost];
+    SA.randomRange = min(max(floor(log10(SA.cost)*4),2),20);
+    disp(iteration)
 end
 
 % SA.initialSolution = [Robot.initiPositions

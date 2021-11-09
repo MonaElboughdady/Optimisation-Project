@@ -1,6 +1,6 @@
 function [points] = initializePositions(r,n)
 
-radiusofBigCircle = (pi*r)/(n-pi);
+radiusofBigCircle = (pi*r)/max((n-pi),1);
 centerofCircle = ceil(radiusofBigCircle + 2*r);
 separationAngle = floor(360/n);
 points = [];
