@@ -17,31 +17,31 @@ figure
 set(gcf, 'WindowState', 'maximized');
 disp("Initial Solution")
 
-%Generate initial solution
+%Generate initial solution for each robot
 for i = 1:Robot.number
     Controller.controllers{1,i}.Waypoints = min(max([Robot.initPosition(i,:)
         rand(Map.numberofPathsPoints-2,2) .* Map.size
         Map.goals(i,:)],0),Map.size);
     SA.currentSol(:,:,i) = Controller.controllers{1,i}.Waypoints; %Setting the current solution
-    SA.bestSol(:,:,i) = Controller.controllers{1,i}.Waypoints;  %Setting the best solution
+    SA.bestSol(:,:,i) = Controller.controllers{1,i}.Waypoints;  %Setting the best solution till now
 end
 
 [pos,vel] = simulateKinematicsnew(Robot,Controller,Map,false);
-SA.cost = calculateCostFunction(pos,vel,Robot,Map,Controller,4,3);
-SA.bestCost = SA.cost;
-
+SA.cost = calculateCostFunction(pos,vel,Robot,Map,Controller,4,3); %Calculating the initial cost function
+SA.bestCost = SA.cost;  %Setting the best cost till now
 
 disp("Iterations")
-for iteration = 1:SA.maxNumofIterations
-    for i = 1:Robot.number
+
+for iteration = 1:SA.maxNumofIterations %Looping till the max number of iterations reached
+    for i = 1:Robot.number %Generate a random solution for each robot
         Controller.controllers{1,i}.Waypoints = min(max(Controller.controllers{1,i}.Waypoints - [0 0
             (rand(Map.numberofPathsPoints-2,2) .* SA.randomRange) - (SA.randomRange/2)
             0 0],0),Map.size);
     end
     [pos,vel] = simulateKinematicsnew(Robot,Controller,Map,false);
-    SA.newCost = calculateCostFunction(pos,vel,Robot,Map,Controller,4,3);
-    SA.costDifference = SA.newCost - SA.cost;
-    if(SA.costDifference < 0)
+    SA.newCost = calculateCostFunction(pos,vel,Robot,Map,Controller,4,3); %Calculating the current cost function
+    SA.costDifference = SA.newCost - SA.cost; %Calculating the difference between the current cost and the previous one
+    if(SA.costDifference < 0) %Check if new solution is better than old one
         SA.cost = SA.newCost;
         for i = 1:Robot.number
             SA.currentSol(:,:,i) = Controller.controllers{1,i}.Waypoints;
