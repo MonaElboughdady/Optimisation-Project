@@ -1,19 +1,18 @@
-SA.maxNumofIterations = 10000;
+SA.maxNumofIterations = 1000;
 SA.initTemperature = 5000;
 SA.finalTemperature = 1;
 SA.currentTemperature = SA.initTemperature;
+SA.temperatures = [];
 SA.beta = (SA.initTemperature - SA.finalTemperature) / SA.maxNumofIterations;
 SA.alpha = 0.9;
 SA.linearCooling = 1;
 SA.checkProbability = 1;
-% SA.passInitialSolution = false;
-% SA.passNewSolution = false;
 SA.cost = 0;
 SA.newCost = 0;
 SA.costs = [];
 SA.randomRange = 10;
-% figure
-% set(gcf, 'WindowState', 'maximized');
+figure
+set(gcf, 'WindowState', 'maximized');
 disp("Initial Solution")
 
 for i = 1:Robot.number
@@ -63,8 +62,9 @@ for iteration = 1:SA.maxNumofIterations
             SA.bestSol(:,:,i) = Controller.controllers{1,i}.Waypoints;
         end
     end
-    plotPaths(Controller,Robot,Map,SA)
     SA.currentTemperature = SA.initTemperature - SA.beta * iteration;
+    SA.temperatures = [SA.temperatures SA.currentTemperature];
+    plotPaths(Controller,Robot,Map,SA,iteration)
     %         if(SA.newCost < SA.cost)
     %             SA.cost = SA.newCost;
     %             for i = 1:Robot.number
