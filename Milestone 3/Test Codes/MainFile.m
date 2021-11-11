@@ -26,7 +26,7 @@ Map.waypointRadius = 10;
 Map.goalRadius = 2;
 Map.size = [100 100];
 Map.numberofObstacles = 3;
-Map.radiusofObstacles = [5 10 20];
+Map.radiusofObstacles = [5 7 20];
 Map.locationofObstacles = [30 37 30
                            30 38 50];
 

@@ -19,7 +19,7 @@ nexttile
 plot(SA.costs)
 legend("Cost")
 xlim([0 SA.maxNumofIterations])
-ylim([-1e6 1e5])
+ylim([-2e5 2e5])
 pbaspect([1 1 1])
 nexttile
 plot(SA.temperatures)
