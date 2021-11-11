@@ -15,17 +15,20 @@ end
 xlim([0 Map.size(1)])
 ylim([0 Map.size(2)])
 pbaspect([1 1 1])
+title('Current Trajectories')
 nexttile
 plot(SA.costs)
 legend("Cost")
 xlim([0 SA.maxNumofIterations])
 ylim([-2e5 2e5])
 pbaspect([1 1 1])
+title('Cost')
 nexttile
 plot(SA.temperatures)
 legend("Temperature")
 xlim([0 SA.maxNumofIterations])
 ylim([0 SA.initTemperature])
 pbaspect([1 1 1])
+title('Temperature')
 drawnow
 end

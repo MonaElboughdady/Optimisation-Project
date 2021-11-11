@@ -71,7 +71,7 @@ for iteration = 1:SA.maxNumofIterations
         SA.currentTemperature = SA.initTemperature * SA.beta ^ iteration;
     end
     SA.temperatures = [SA.temperatures SA.currentTemperature];
-    plotPaths(Controller,Robot,Map,SA,iteration)
+    %plotPaths(Controller,Robot,Map,SA,iteration)
     SA.costs = [SA.costs SA.cost];
     disp(SA.cost)
     disp(iteration)
