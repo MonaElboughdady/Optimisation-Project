@@ -1,3 +1,5 @@
+%Simulated Annealing Algorithm
+%Initialize SA Parameters
 SA.maxNumofIterations = 1000;
 SA.initTemperature = 5000;
 SA.finalTemperature = 1;
@@ -15,12 +17,13 @@ figure
 set(gcf, 'WindowState', 'maximized');
 disp("Initial Solution")
 
+%Generate initial solution
 for i = 1:Robot.number
     Controller.controllers{1,i}.Waypoints = min(max([Robot.initPosition(i,:)
         rand(Map.numberofPathsPoints-2,2) .* Map.size
         Map.goals(i,:)],0),Map.size);
-    SA.currentSol(:,:,i) = Controller.controllers{1,i}.Waypoints;
-    SA.bestSol(:,:,i) = Controller.controllers{1,i}.Waypoints;
+    SA.currentSol(:,:,i) = Controller.controllers{1,i}.Waypoints; %Setting the current solution
+    SA.bestSol(:,:,i) = Controller.controllers{1,i}.Waypoints;  %Setting the best solution
 end
 
 [pos,vel] = simulateKinematicsnew(Robot,Controller,Map,false);
