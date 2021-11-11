@@ -44,7 +44,7 @@ for i = 1:Robot.number
     end
 end
 
-cost = -1 * obsdist + dist + summdiv_x + summdiv_y + cohesionCost;
+cost = (-1 * obsdist) + dist + summdiv_x + summdiv_y + cohesionCost;
 % =======
 % function [cost] = calculateCostFunction(pos,Robot)
 % 

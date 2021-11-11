@@ -57,13 +57,13 @@ for iteration = 1:SA.maxNumofIterations
             end
         end
     end
-    plotPaths(Controller,Robot,Map)
     if(SA.cost < SA.bestCost)
         SA.bestCost = SA.cost;
         for i = 1:Robot.number
             SA.bestSol(:,:,i) = Controller.controllers{1,i}.Waypoints;
         end
     end
+    plotPaths(Controller,Robot,Map,SA)
     SA.currentTemperature = SA.initTemperature - SA.beta * iteration;
     %         if(SA.newCost < SA.cost)
     %             SA.cost = SA.newCost;

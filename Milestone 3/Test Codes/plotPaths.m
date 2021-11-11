@@ -1,10 +1,11 @@
-function [] = plotPaths(Controller,Robot,Map)
+function [] = plotPaths(Controller,Robot,Map,SA)
 hold off
 for i = 1:Robot.number
     if(i > 1)
         hold on
     end
-    plot(Controller.controllers{1,i}.Waypoints(:,1),Controller.controllers{1,i}.Waypoints(:,2),"k--d")
+    plot(Controller.controllers{1,i}.Waypoints(:,1),Controller.controllers{1,i}.Waypoints(:,2),"k--d",'color',Robot.pathsColors(i,:),'DisplayName',['Robot' i])
+    legend
 end
 for i = 1:Map.numberofObstacles
     plot(Map.locationofObstacles(1,i), Map.locationofObstacles(2,i), 'bo', 'MarkerSize', Map.radiusofObstacles(i))

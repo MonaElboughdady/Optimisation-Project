@@ -6,7 +6,7 @@ Robot.robots = repelem([Robot.originalRobotKinematics.copy()],Robot.number);
 Robot.initOrientation = (pi/4)*ones(Robot.number,1);
 Robot.initPosition = initializePositions(Robot.trackWidth*2,Robot.number);
 Robot.initPose = [Robot.initPosition Robot.initOrientation]';
-
+Robot.pathsColors = rand(Robot.number,3);
 
 
 Controller.desiredLinearVelocity = 3;
