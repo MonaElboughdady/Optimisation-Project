@@ -4,8 +4,8 @@ SA.finalTemperature = 1;
 SA.currentTemperature = SA.initTemperature;
 SA.temperatures = [];
 SA.beta = (SA.initTemperature - SA.finalTemperature) / SA.maxNumofIterations;
-SA.alpha = 0.8;
-SA.linearCooling = 1;
+SA.alpha = 0.99;
+SA.linearCooling = false;
 SA.checkProbability = 1;
 SA.cost = 0;
 SA.newCost = 0;
@@ -65,7 +65,9 @@ for iteration = 1:SA.maxNumofIterations
     if(SA.linearCooling)
         SA.currentTemperature = SA.initTemperature - SA.beta * iteration;
     else
-        SA.currentTemperature = 
+        SA.currentTemperature = SA.initTemperature * SA.alpha ^ iteration;
+    end
+    SA.currentTemperature
     SA.temperatures = [SA.temperatures SA.currentTemperature];
     plotPaths(Controller,Robot,Map,SA,iteration)
     SA.costs = [SA.costs SA.cost];

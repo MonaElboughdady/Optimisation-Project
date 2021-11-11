@@ -49,14 +49,4 @@ Map.locationofObstacles = [30 37 30
 
 
 
-% for i = 1:Robot.number
-%     Controller.controllers{1,i}.Waypoints = [Robot.initPosition(i,:)
-%                                            10+4*i 10+4*i
-%                                            20+4*i 15+4*i
-%                                            Map.goals(i,:)];                                   
-%      
-% end
-% 
-%        
-% [pos,vel] = simulateKinematics(Robot,Controller,Map,true)
 runSA
