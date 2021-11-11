@@ -11,7 +11,7 @@ SA.checkProbability = 1;
 SA.cost = 0;
 SA.newCost = 0;
 SA.costs = [];
-SA.randomRange = 20;
+SA.randomRange = 10;
 % figure
 % set(gcf, 'WindowState', 'maximized');
 disp("Initial Solution")
@@ -21,21 +21,23 @@ for i = 1:Robot.number
         rand(Map.numberofPathsPoints-2,2) .* Map.size
         Map.goals(i,:)],0),Map.size);
     SA.currentSol(:,:,i) = Controller.controllers{1,i}.Waypoints;
+    SA.bestSol(:,:,i) = Controller.controllers{1,i}.Waypoints;
 end
 
 [pos,vel] = simulateKinematicsnew(Robot,Controller,Map,false);
-SA.cost = calculateCostFunction(pos,vel,Robot,Map,Controller,4);
+SA.cost = calculateCostFunction(pos,vel,Robot,Map,Controller,4,3);
+SA.bestCost = SA.cost;
 
 
 disp("Iterations")
 for iteration = 1:SA.maxNumofIterations
     for i = 1:Robot.number
         Controller.controllers{1,i}.Waypoints = min(max(Controller.controllers{1,i}.Waypoints - [0 0
-            (rand(Map.numberofPathsPoints-2,2) .* SA.randomRange)-floor(SA.randomRange/2)
+            (rand(Map.numberofPathsPoints-2,2) .* SA.randomRange) - (SA.randomRange/2)
             0 0],0),Map.size);
     end
     [pos,vel] = simulateKinematicsnew(Robot,Controller,Map,false);
-    SA.newCost = calculateCostFunction(pos,vel,Robot,Map,Controller,4);
+    SA.newCost = calculateCostFunction(pos,vel,Robot,Map,Controller,4,3);
     SA.costDifference = SA.newCost - SA.cost;
     if(SA.costDifference < 0)
         SA.cost = SA.newCost;
@@ -55,6 +57,13 @@ for iteration = 1:SA.maxNumofIterations
             end
         end
     end
+    plotPaths(Controller,Robot,Map)
+    if(SA.cost < SA.bestCost)
+        SA.bestCost = SA.cost;
+        for i = 1:Robot.number
+            SA.bestSol(:,:,i) = Controller.controllers{1,i}.Waypoints;
+        end
+    end
     SA.currentTemperature = SA.initTemperature - SA.beta * iteration;
     %         if(SA.newCost < SA.cost)
     %             SA.cost = SA.newCost;
@@ -67,7 +76,7 @@ for iteration = 1:SA.maxNumofIterations
     %             end
     %         end
     SA.costs = [SA.costs SA.cost];
-    SA.randomRange = min(max(floor(log10(SA.cost)*4),2),20);
+    %SA.randomRange = min(max(floor((exp(SA.cost)+0.5)*4),2),20);
     disp(SA.cost)
     disp(iteration)
 end

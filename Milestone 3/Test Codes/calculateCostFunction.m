@@ -1,5 +1,5 @@
 % <<<<<<< Updated upstream
-function [cost] = calculateCostFunction(pos,vel,Robot,Map,Controller,rf)
+function [cost] = calculateCostFunction(pos,vel,Robot,Map,Controller,rf,c)
 
 cohesionCost = 0;
 Matrix_vx = vel(1,:,1);
@@ -35,9 +35,16 @@ for i = 1:Robot.number
         dist = dist + norm(Controller.controllers{1,i}.Waypoints(j,:)-Controller.controllers{1,i}.Waypoints(j+1,:)); 
     end
 end
+[M,N,O] = size(pos);
+obsdist = 0;
+for i = 1:Robot.number
+    for j = 1:N
+        [distance,index] = closestObstacle(Map,Robot,pos(1:2,N,i));
+        obsdist = obsdist + (distance - (Robot.originalRobotKinematics.TrackWidth + Map.radiusofObstacles(index)) - c);
+    end
+end
 
-
-cost = dist + summdiv_x + summdiv_y + cohesionCost;
+cost = -1 * obsdist + dist + summdiv_x + summdiv_y + cohesionCost;
 % =======
 % function [cost] = calculateCostFunction(pos,Robot)
 % 

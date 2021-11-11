@@ -76,26 +76,32 @@ end
 [M,N,O] = size(posArray);
 vizRate = rateControl(10/sampleTime);
 for j = 1:N
-        hold off
-        
-        % Plot path each instance so that it stays persistent while robot mesh
-        % moves
-        for i = 1:Robot.number
-            if(i > 1)
-                hold on
-            end
-            path = Controller.controllers{1,i}.Waypoints;
-            plot(path(:,1), path(:,2),"k--d")
+    hold off
+    
+    % Plot path each instance so that it stays persistent while robot mesh
+    % moves
+    for i = 1:Robot.number
+        if(i > 1)
+            hold on
         end
-        hold all
-        
-        % Plot the path of the robot as a set of transforms
-        plotTrVec = [squeeze(posArray(1:2,j,:)); zeros(1,Robot.number)];
-        plotRot = axang2quat([zeros(Robot.number,1) zeros(Robot.number,1) ones(Robot.number,1) squeeze(posArray(3,j,:))]);
-        plotTransforms(plotTrVec', plotRot, "MeshFilePath", "groundvehicle.stl", "Parent", gca, "View","2D", "FrameSize", frameSize);
-        light;
-        xlim([0 55])
-        ylim([0 55])   
-        waitfor(vizRate);
+        path = Controller.controllers{1,i}.Waypoints;
+        plot(path(:,1), path(:,2),"k--d")
+    end
+    
+    for i = 1:Map.numberofObstacles
+        path = Controller.controllers{1,i}.Waypoints;
+        plot(Map.locationofObstacles(1,i), Map.locationofObstacles(2,i), 'bo', 'MarkerSize', Map.radiusofObstacles(i))
+    end
+    
+    hold all
+    
+    % Plot the path of the robot as a set of transforms
+    plotTrVec = [squeeze(posArray(1:2,j,:)); zeros(1,Robot.number)];
+    plotRot = axang2quat([zeros(Robot.number,1) zeros(Robot.number,1) ones(Robot.number,1) squeeze(posArray(3,j,:))]);
+    plotTransforms(plotTrVec', plotRot, "MeshFilePath", "groundvehicle.stl", "Parent", gca, "View","2D", "FrameSize", frameSize);
+    light;
+    xlim([0 100])
+    ylim([0 100])
+    waitfor(vizRate);
 end
 end

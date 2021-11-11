@@ -20,15 +20,15 @@ Controller.sampleTime = 0.1;
 
 
 Map.goalCenter = [30 30];
-Map.numberofPathsPoints = 3;
+Map.numberofPathsPoints = 4;
 Map.goals = Robot.initPosition+Map.goalCenter;
 Map.waypointRadius = 10;
 Map.goalRadius = 2;
 Map.size = [100 100];
 Map.numberofObstacles = 3;
-Map.radiusofObstacles = [2 3 4];
-Map.locationofObstacles = [10 20 5
-                           10 20 5];
+Map.radiusofObstacles = [5 10 20];
+Map.locationofObstacles = [30 37 30
+                           30 38 50];
 
 
 
