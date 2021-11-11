@@ -20,7 +20,7 @@ for i = 1:Robot.number %Loop over each robot
     if(i < Robot.number)
     for j = i+1:Robot.number
         if(i ~= j)
-           posi_j = (pos(1:2,:,i)-pos(1:2, : ,j)).^2; %get the difference between the position robot i and all next robots j in x and y then square it
+           posi_j = (pos(1:2,:,i)-pos(1:2,:,j)).^2; %get the difference between the position robot i and all next robots j in x and y then square it
            ri_j = (posi_j(1,:) + posi_j(2,:)); %add the squared x and y position
            difference = abs(ri_j.^0.5 - rf); 
            sumi_j = sum(difference); %sum differences
