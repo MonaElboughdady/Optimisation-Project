@@ -1,10 +1,10 @@
-Robot.number = 3;
+Robot.number = 4;
 Robot.wheelRadius = 0.1;
 Robot.trackWidth = 1;
 Robot.originalRobotKinematics = differentialDriveKinematics("WheelRadius",Robot.wheelRadius,"TrackWidth",Robot.trackWidth,"VehicleInputs","VehicleSpeedHeadingRate");
 Robot.robots = repelem([Robot.originalRobotKinematics.copy()],Robot.number);
 Robot.initOrientation = (pi/4)*ones(Robot.number,1);
-Robot.initPosition = initializePositions(Robot.trackWidth*2,Robot.number)
+Robot.initPosition = initializePositions(Robot.trackWidth*2,Robot.number);
 Robot.initPose = [Robot.initPosition Robot.initOrientation]';
 
 
@@ -20,10 +20,15 @@ Controller.sampleTime = 0.1;
 
 
 Map.goalCenter = [30 30];
-Map.numberofPathsPoints = 5;
+Map.numberofPathsPoints = 3;
 Map.goals = Robot.initPosition+Map.goalCenter;
-Map.goalRadius = 1;
+Map.waypointRadius = 10;
+Map.goalRadius = 2;
 Map.size = [100 100];
+Map.numberofObstacles = 3;
+Map.radiusofObstacles = [2 3 4];
+Map.locationofObstacles = [10 20 5
+                           10 20 5];
 
 
 

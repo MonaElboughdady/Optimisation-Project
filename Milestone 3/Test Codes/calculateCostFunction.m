@@ -34,7 +34,6 @@ for i = 1:Robot.number
     for j = 1:Map.numberofPathsPoints-1
         dist = dist + norm(Controller.controllers{1,i}.Waypoints(j,:)-Controller.controllers{1,i}.Waypoints(j+1,:)); 
     end
-    
 end
 
 
