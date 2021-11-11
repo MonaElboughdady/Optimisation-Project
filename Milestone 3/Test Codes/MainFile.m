@@ -22,6 +22,7 @@ Robot.initOrientation = (pi/4)*ones(Robot.number,1); %Initialize the orientation
 Robot.initPosition = initializePositions(Robot.trackWidth*2,Robot.number); %Initialize the position of each robot
 Robot.initPose = [Robot.initPosition Robot.initOrientation]'; %Creating the pose of each robot
 Robot.pathsColors = rand(Robot.number,3); %Identify the color of each robot path
+Robot.rf = 4;
 
 %Setting controller parameters:
 Controller.desiredLinearVelocity = 3; %Set the desired linear velocity of the robots
@@ -48,5 +49,6 @@ Map.numberofObstacles = 3; %Number of obstacles
 Map.radiusofObstacles = [5 7 20]; %Different Radii for obstacles 
 Map.locationofObstacles = [30 37 30 
                            30 38 50]; % X and Y of each obstacle
+Map.c = 3; %clearance for OA
 
 runSA

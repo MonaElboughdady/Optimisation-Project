@@ -7,7 +7,7 @@ SA.currentTemperature = SA.initTemperature;
 SA.temperatures = [];
 SA.beta = (SA.initTemperature - SA.finalTemperature) / SA.maxNumofIterations;
 SA.alpha = 0.8;
-SA.linearCooling = true;
+SA.linearCooling = false;
 SA.checkProbability = 1;
 SA.cost = 0;
 SA.newCost = 0;
@@ -27,7 +27,7 @@ for i = 1:Robot.number
 end
 
 [pos,vel] = simulateKinematicsnew(Robot,Controller,Map,false);
-SA.cost = calculateCostFunction(pos,vel,Robot,Map,Controller,4,3); %Calculating the initial cost function
+SA.cost = calculateCostFunction(pos,vel,Robot,Map,Controller,Robot.rf,Map.c); %Calculating the initial cost function
 SA.bestCost = SA.cost;  %Setting the best cost till now
 
 disp("Iterations")
@@ -39,7 +39,7 @@ for iteration = 1:SA.maxNumofIterations %Looping till the max number of iteratio
             0 0],0),Map.size);
     end
     [pos,vel] = simulateKinematicsnew(Robot,Controller,Map,false);
-    SA.newCost = calculateCostFunction(pos,vel,Robot,Map,Controller,4,3); %Calculating the current cost function
+    SA.newCost = calculateCostFunction(pos,vel,Robot,Map,Controller,Robot.rf,Map.c); %Calculating the current cost function
     SA.costDifference = SA.newCost - SA.cost; %Calculating the difference between the current cost and the previous one
     if(SA.costDifference < 0) %Check if new solution is better than old one
         SA.cost = SA.newCost;
