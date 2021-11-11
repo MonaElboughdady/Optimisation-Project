@@ -30,15 +30,17 @@ Controller.lookaheadDistance = 0.5; %Set the lookahead distance of the robots
 Controller.controllers = cell(1,Robot.number); %creating a cell array with the controllers
 
 
-for i = 1:Robot.number %looping on each robot
-    Controller.controllers{1,i} = controllerPurePursuit("DesiredLinearVelocity",Controller.desiredLinearVelocity,"MaxAngularVelocity",Controller.maxAngularVelocity,"LookaheadDistance",Controller.lookaheadDistance);
+for i = 1:Robot.number %looping on each robot to create the controller of each robot 
+    Controller.controllers{1,i} = controllerPurePursuit("DesiredLinearVelocity",...
+        Controller.desiredLinearVelocity,"MaxAngularVelocity",Controller.maxAngularVelocity,...
+        "LookaheadDistance",Controller.lookaheadDistance);
 end
-Controller.sampleTime = 0.1;
+Controller.sampleTime = 0.1; %Setting the sample time of the controller
 
-
-Map.goalCenter = [30 30];
-Map.numberofPathsPoints = 4;
-Map.goals = Robot.initPosition+Map.goalCenter;
+%Initialize Map parameters:
+Map.goalCenter = [30 30]; %Setting the coordinates of the goal       
+Map.numberofPathsPoints = 4; %Setting the number of points in the path
+Map.goals = Robot.initPosition+Map.goalCenter; %
 Map.waypointRadius = 10;
 Map.goalRadius = 2;
 Map.size = [100 100];
@@ -53,10 +55,7 @@ Map.locationofObstacles = [30 37 30
 %     Controller.controllers{1,i}.Waypoints = [Robot.initPosition(i,:)
 %                                            10+4*i 10+4*i
 %                                            20+4*i 15+4*i
-%                                            Map.goals(i,:)];                                   
-%      
-% end
-% 
-%        
+%                                            Map.goals(i,:)];                                     
+% end      
 % [pos,vel] = simulateKinematics(Robot,Controller,Map,true)
 runSA
