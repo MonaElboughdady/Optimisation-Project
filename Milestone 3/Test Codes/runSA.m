@@ -1,18 +1,18 @@
 %Simulated Annealing Algorithm
 %Initialize SA Parameters
-SA.maxNumofIterations = 1000;
-SA.initTemperature = 5000;
-SA.finalTemperature = 1;
-SA.currentTemperature = SA.initTemperature;
-SA.temperatures = [];
-SA.beta = (SA.initTemperature - SA.finalTemperature) / SA.maxNumofIterations;
-SA.alpha = 0.8;
-SA.linearCooling = false;
-SA.checkProbability = 1;
-SA.cost = 0;
-SA.newCost = 0;
-SA.costs = [];
-SA.randomRange = 10;
+SA.maxNumofIterations = 1000; %Max number of iterations
+SA.initTemperature = 5000; %Initial Temperature
+SA.finalTemperature = 1; %Final Temperature
+SA.currentTemperature = SA.initTemperature; %Current Temperature 
+SA.temperatures = []; %Temperatures Array
+SA.beta = (SA.initTemperature - SA.finalTemperature) / SA.maxNumofIterations; %Linear Cooling Coefficient Beta
+SA.alpha = 0.8; %Geometric Cooling Coefficient alpha
+SA.linearCooling = false; %Linear Cooling Flag
+SA.checkProbability = 1; %Check probability Flag
+SA.cost = 0; %Simulated Annealing Cost
+SA.newCost = 0; %Simulated Annealing New Cost
+SA.costs = []; %Simulated Annealing Costs Array
+SA.randomRange = 10; %Random Range
 figure
 set(gcf, 'WindowState', 'maximized');
 disp("Initial Solution")
@@ -20,7 +20,7 @@ disp("Initial Solution")
 %Generate initial solution for each robot
 for i = 1:Robot.number
     Controller.controllers{1,i}.Waypoints = min(max([Robot.initPosition(i,:)
-        rand(Map.numberofPathsPoints-2,2) .* Map.size
+        rand(Map.numberofPathsPoints-2,2) .* Map.size %????
         Map.goals(i,:)],0),Map.size);
     SA.currentSol(:,:,i) = Controller.controllers{1,i}.Waypoints; %Setting the current solution
     SA.bestSol(:,:,i) = Controller.controllers{1,i}.Waypoints;  %Setting the best solution till now

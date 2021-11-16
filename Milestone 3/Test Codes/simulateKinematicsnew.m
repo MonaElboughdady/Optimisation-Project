@@ -1,6 +1,6 @@
-function [posArray,velArray,failed] = simulateKinematicsnew(Robot,Controller,Map,visualize)
-%this code is mainly used for calculating kinematics it's no longer used
+%This function is mainly used for calculating kinematics it's no longer used
 %for visualiztion so the visualize flag is always set to false
+function [posArray,velArray,failed] = simulateKinematicsnew(Robot,Controller,Map,visualize)
 
 failed = false;
 sampleTime = Controller.sampleTime;
