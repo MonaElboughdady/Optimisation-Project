@@ -1,9 +1,11 @@
-function Parents_selection(GA,R,indexes)
+function GA = Parents_selection(GA,R,indexes)
 %% Initialization for Fitness propotionate selection
         probability = zeros(1,GA.Pop_size); % define an array for the probability of each chromosom
         Q = zeros(1,GA.Pop_size);
+        Fitness = 1./GA.Fitness;
+        Fitness_sum = sum(Fitness);
         for count = 1 : GA.Pop_size %for the size of population
-        probability(1,count) = 1-(GA.Fitness(count)/GA.Fitness_sum); %P(count) = the probability of solution count'th
+        probability(1,count) = (Fitness(count)/Fitness_sum); %P(count) = the probability of solution count'th
         Q(count) = sum(probability); %Q(count) = cumulative probability of the count'th solution
         end
    
