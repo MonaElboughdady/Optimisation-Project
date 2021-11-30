@@ -1,4 +1,4 @@
-function Parents_selection(GA,R,Robot)
+function Parents_selection(GA,R,indexes)
 %% Initialization for Fitness propotionate selection
         probability = zeros(1,GA.Pop_size); % define an array for the probability of each chromosom
         Q = zeros(1,GA.Pop_size);
@@ -11,6 +11,8 @@ function Parents_selection(GA,R,Robot)
     if (GA.Roulette == 1)
         for i = 1 : R
             random = rand(1); %generate a random number each iteration till R times
+            %If Rand is less than Q1, the first solution (X1) is selected; otherwise the jth solution 
+            %is selected such that Rand is greater than Qj‐1 and less or equal than Qj (Qj 1 Rand Qj).
             if (random < Q(1))
                GA.parents_index(i) = 1; %choose the parent index and add to an array
             end
@@ -38,11 +40,10 @@ function Parents_selection(GA,R,Robot)
     
 %% Tournament selection
     if(GA.TS == 1)
-        K = 10;
-        random_array = zeros(1,k);
-        random_indexes = randi([1,GA.Pop_size],[1,K]); % get k random chromosoms to compare in a tournament
-        for j = 1:R
-        for i = 1:k
+        random_array = zeros(1,GA.k);
+        random_indexes = randi([1,GA.Pop_size],[1,GA.k]); % get k random chromosoms to compare in a tournament
+        for j = 1:R %for number of required parents
+        for i = 1:GA.k % for the K as is the number of randomaly selected chromosoms
            random_array(i) = GA.Fitness(random_indexes(i)); 
         end
         [M,I] = min(random_array); % get the index of the minimum fitness value and store in I
@@ -52,7 +53,7 @@ function Parents_selection(GA,R,Robot)
 
 %% Rank selection  
     if(GA.Rank == 1)
-        
+       GA.parents_index = indexes(1:R);
     end
 
 end
