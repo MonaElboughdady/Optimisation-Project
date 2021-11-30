@@ -2,39 +2,58 @@
 GA.Num_Generations = 500;  %maximum number of generations to be tested
 GA.Pop_size = 50;  %the population size
 GA.Elite_ratio = 0.1;  %percentage of elitism
-GA.CrossOver_ratio = 0.8; %percentage of cross over processes
-GA.Mutation_ratio = 0.1; %the rest of mutation ratio
+GA.CrossOver_ratio = 0.3; %percentage of cross over processes
+GA.Mutation_ratio = 1 - GA.Elite_ratio - GA.CrossOver_ratio; %the rest of mutation ratio
 GA.Alpha = 0.4;  %alpha used for cross over process to generate new children
 GA.Noise_Scale = 0.1;  %Used for mutation to add noise around specific genes, number from [0 to 1]
 GA.Fitness = zeros(1,GA.Pop_size); %initaialize an empty fitness matrix
+GA.Roulette = 1;% Roulette wheel selection on and off
+GA.SUS = 0;  % Stochastic universial sampiling on and off
+GA.TS = 0; %Tournament selection on and off
+GA.Rank = 0; %Rank selection on and off
+GA.Survivor = 1; % if 1 do fitness based selection, if 0 do Age based selection
+R = GA.CrossOver_ratio * GA.Pop_size; %define the number of desired selected parents
+if rem(R,2) == 1 %check if R is odd number
+R = R+1;
+end
+Mut = GA.Mutation_ratio * GA.Pop_size; %define the number of the desires mutations
 %% Initial step:
 disp("Initial Solution")
 % Generate a random solution
-GA.Population_int = cell(Robot.number,1); % initialize a matrix of populations 
-for i = 1:Robot.number
-    for j = 1:GA.Pop_size % assign random genes for every person 
-    GA.pop_int(:,:,j) = min(max([Robot.initPosition(i,:)
+GA.Population_int = cell(Robot.number,1);% initialize a matrix of initial population 
+GA.Population = cell(Robot.number,1); % initialize a matrix of population
+for i = 1:GA.Pop_size %for all chromosoms
+    for j = 1:Robot.number % for all genes 
+    GA.Population_int{j}(:,:,i) = min(max([Robot.initPosition(j,:)
         rand(Map.numberofPathsPoints-2,2).* Map.size
-        Map.goals(i,:)],0),Map.size); % matrix (numberofpaths x 2) add the persons into a matrix for poulation
-    GA.pop_points_int(:,:,j) = GA.pop_int(:,:,j)';
+        Map.goals(j,:)],0),Map.size); % generate random chromosom
     end
-    GA.Population_int{i} = GA.pop_int; %assign an initial population for every robot
 end
-
-%Calculate the fitness of first generation
-    for j = 1:GA.Pop_size % assign random genes for every person 
-        for i = 1:Robot.number 
-            Controller.controllers{1,i}.Waypoints = GA.Population_int{i}(:,:,j); %assign the waypoints
-        end
-    [pos,vel] = simulateKinematicsnew(Robot,Controller,Map,false);
-    %GA.Population_int{1}(:,:,j).
-    GA.Fitness(1,j) = calculateCostFunction(pos,vel,Robot,Map,Controller,Robot.rf,Map.c);
-    end
+%Calculate the fitness for first iteration
+GA.Population = GA.Population_int; %initialize the population as equal to population initial
+fitness_calculation(GA,Robot,Map,Controller);
+  
+%% Iterations
+for k = 1: GA.Num_Generations  % for number of generations
+    GA.Population_int = GA.Population; %update the previous population to the current population
     [sortedFitness,indexes] = sort(GA.Fitness); %sort the fitness to get the index of the elite values
     GA.Elite_index = indexes(1: GA.Pop_size* GA.Elite_ratio); %get the indexes of the desired elite members
-    GA.Mutation_index = indexes ( (1- GA.Mutation_ratio)* GA.Pop_size : GA.Pop_size); % get the index of the the desired persons to be mutated
-
-    
+    GA.Mutation_index = indexes ( (1- GA.Mutation_ratio)* GA.Pop_size : GA.Pop_size); % get the index of the the desired chromosoms to be mutated
+    GA.Fitness_sum = sum(GA.Fitness); %summation of the fitness vector
+    GA.parents_index = zeros(1,R); % an array of selected parents location on the population
+    Parents_selection(GA,R,indexes,Robot)%parents selection
+    Generate_offspring(GA,Robot); % Call Generating off spring
+    Mutation(GA,Mut,Robot)
+    %generat a new population
+    for i = 1: Robot.number
+        for j = 1: GA.Pop_size
+        if( (1<= j)&& (j<= GA.Pop_size* GA.Elite_ratio)) %put the Elite members in first
+         GA.Population{i}(:,:,j) = GA.Population_int{i}(:,:,GA.Elite_index(1,j));
+        end  
+        end   
+    end
+    fitness_calculation(GA,Robot); %Calculate the fitness for each chromosom
+end   
     
     
     
