@@ -1,0 +1,58 @@
+function Parents_selection(GA,R,Robot)
+%% Initialization for Fitness propotionate selection
+        probability = zeros(1,GA.Pop_size); % define an array for the probability of each chromosom
+        Q = zeros(1,GA.Pop_size);
+        for count = 1 : GA.Pop_size %for the size of population
+        probability(1,count) = 1-(GA.Fitness(count)/GA.Fitness_sum); %P(count) = the probability of solution count'th
+        Q(count) = sum(probability); %Q(count) = cumulative probability of the count'th solution
+        end
+   
+%% Roulette selection
+    if (GA.Roulette == 1)
+        for i = 1 : R
+            random = rand(1); %generate a random number each iteration till R times
+            if (random < Q(1))
+               GA.parents_index(i) = 1; %choose the parent index and add to an array
+            end
+            for j = 2 : GA.Pop_size
+                if((Q(j-1)<random) && (Q(j)>=random))
+                   GA.parents_index(i) = j; 
+                end
+            end
+        end
+    end
+%% SUS selection
+    if(GA.SUS == 1)
+            random = rand(1,R); %generate a random number each iteration till R times in the same time
+         for i = 1 : R
+            if (random(i) < Q(1))
+               GA.parents_index(i) = 1; 
+            end
+            for j = 2 : GA.Pop_size
+                if((Q(j-1)<random(i)) && (Q(j)>=random(i)))
+                   GA.parents_index(i) = j; 
+                end
+            end
+         end
+    end
+    
+%% Tournament selection
+    if(GA.TS == 1)
+        K = 10;
+        random_array = zeros(1,k);
+        random_indexes = randi([1,GA.Pop_size],[1,K]); % get k random chromosoms to compare in a tournament
+        for j = 1:R
+        for i = 1:k
+           random_array(i) = GA.Fitness(random_indexes(i)); 
+        end
+        [M,I] = min(random_array); % get the index of the minimum fitness value and store in I
+        GA.parents_index(j) = I; %store the index of the best parent 
+        end 
+    end
+
+%% Rank selection  
+    if(GA.Rank == 1)
+        
+    end
+
+end
