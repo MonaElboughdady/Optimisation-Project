@@ -26,6 +26,8 @@ function Parents_selection(GA,R,indexes)
 %% SUS selection
     if(GA.SUS == 1)
             random = rand(1,R); %generate a random number each iteration till R times in the same time
+        %If Rand is less than Q1, the first solution (X1) is selected; otherwise the jth solution 
+        %is selected such that Rand is greater than Qj‐1 and less or equal than Qj (Qj 1 Rand Qj).
          for i = 1 : R
             if (random(i) < Q(1))
                GA.parents_index(i) = 1; 
