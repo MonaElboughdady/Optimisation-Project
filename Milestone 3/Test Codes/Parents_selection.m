@@ -53,7 +53,7 @@ function Parents_selection(GA,R,indexes)
 
 %% Rank selection  
     if(GA.Rank == 1)
-       GA.parents_index = indexes(1:R);
+       GA.parents_index = indexes(1:R); %choose the members with highest rank as parents
     end
 
 end
