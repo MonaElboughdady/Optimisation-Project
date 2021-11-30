@@ -44,7 +44,7 @@ for k = 1: GA.Num_Generations  % for number of generations
     GA.parents_index = zeros(1,R); % an array of selected parents location on the population
     Parents_selection(GA,R,indexes)%parents selection
     Generate_offspring(GA,Robot); % Call Generating off spring
-    Mutation(GA,Mut,Robot)
+    Mutation(GA,Mut,Robot) %do mutation for the weak chromosomes
     
     %Generat a new population
     if (GA.Survivor == 1)
