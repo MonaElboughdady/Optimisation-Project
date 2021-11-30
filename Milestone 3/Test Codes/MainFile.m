@@ -52,4 +52,4 @@ Map.locationofObstacles = [30 37 30
                            30 38 50]; % X and Y of each obstacle
 Map.c = 3; %Clearance for OA (cm)
 
-runSA
+%runSA
