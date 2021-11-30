@@ -4,6 +4,6 @@ function fitness_calculation(GA,Robot,Map,Controller)
             Controller.controllers{1,i}.Waypoints = GA.Population{i}(:,:,j); % assign the controller waypoints
         end
     [pos,vel] = simulateKinematicsnew(Robot,Controller,Map,false); %get the position and acceleration of each robot along the path
-    GA.Fitness(1,j) = calculateCostFunction(pos,vel,Robot,Map,Controller,Robot.rf,Map.c); %get the cosyt value
+    GA.Fitness(1,j) = calculateCostFunction(pos,vel,Robot,Map,Controller,Robot.rf,Map.c); %get the cost value
     end
 end
