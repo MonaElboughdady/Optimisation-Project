@@ -49,12 +49,12 @@ for k = 1: GA.Num_Generations  % for number of generations
     
     %Add the survivors
     for j = 1: GA.Pop_size* GA.Elite_ratio
-        if (GA.Survivor == 1)
+        if (GA.Survivor == 1) %Elite based selection
             for i = 1: Robot.number
           GA.Population{i}(:,:,j) = GA.Population_int{i}(:,:,GA.Elite_index(j)); %add the elite members to the top of the new population
             end   
         end
-        if (GA.Survivor == 0)
+        if (GA.Survivor == 0) %age based selection
           random = randi([GA.Pop_size* GA.Elite_ratio+1, 50], [1, GA.Pop_size* GA.Elite_ratio]); %choose random childern to survive for the next the Generation
           for i = 1: Robot.number
           GA.Population{i}(:,:,j) = GA.Population_int{i}(:,:,random(j)); %add the survivor members to the top of the new population
