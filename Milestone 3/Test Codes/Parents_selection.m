@@ -27,18 +27,20 @@ function GA = Parents_selection(GA,R,indexes)
     end
 %% SUS selection
     if(GA.SUS == 1)
-            random = rand(1,R); %generate a random number each iteration till R times in the same time
+        Pointer = rand(1); %generate a random number each iteration till R times in the same time
         %If Rand is less than Q1, the first solution (X1) is selected; otherwise the jth solution 
         %is selected such that Rand is greater than Qj‐1 and less or equal than Qj (Qj 1 Rand Qj).
+        SUS_IND = 1/R;
          for i = 1 : R
-            if (random(i) < Q(1))
+            if (Pointer < Q(1))
                GA.parents_index(i) = 1; 
             end
             for j = 2 : GA.Pop_size
-                if((Q(j-1)<random(i)) && (Q(j)>=random(i)))
+                if((Q(j-1)<Pointer) && (Q(j)>=Pointer))
                    GA.parents_index(i) = j; 
                 end
             end
+            Pointer = Pointer + SUS_IND;
          end
     end
     
