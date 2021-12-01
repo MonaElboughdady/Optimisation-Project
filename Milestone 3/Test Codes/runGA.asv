@@ -21,7 +21,8 @@ R = R+1;
 end
 Mut = GA.Mutation_ratio * GA.Pop_size; %define the number of the desires mutations
 History = cell(GA.Num_Generations,1); %initialize an empty array of cells 
-GA.best = cell(GA.Num_Generations,1); %initialize an empty array of cells
+Best_chromosomes = cell(GA.Num_Generations,1); %initialize an empty array of cells
+Best_Fitness = zeros(GA.Num_Generations,1); %initialize an empty array to store the fitnesses
 %% Initial step:
 % Generate a random solution
 GA.Population_int = cell(1,Robot.number);% initialize a matrix of initial population 
@@ -45,18 +46,15 @@ for k = 1: GA.Num_Generations  % for number of generations
     GA.Mutation_index = indexes ( (1- GA.Mutation_ratio)* GA.Pop_size+1 : GA.Pop_size); % get the index of the the desired chromosomes to be mutated
     GA.Fitness_sum = sum(GA.Fitness); %summation of the fitness vector
     GA.parents_index = zeros(1,R); % an array of selected parents location on the population
-    GA = Parents_selection(GA,R,indexes);%parents selection
-    GA = Generate_offspring(GA,Robot,R,C); % Call Generating offspring
-    GA = Mutation(GA,Mut,Robot,Map); %do mutation for the weak chromosomes
     
     %Add the survivors
     for j = 1: GA.Pop_size* GA.Elite_ratio
-        if (GA.Survivor == 1)
+        if (GA.Survivor == 1) %Elite based selection
             for i = 1: Robot.number
           GA.Population{i}(:,:,j) = GA.Population_int{i}(:,:,GA.Elite_index(j)); %add the elite members to the top of the new population
             end   
         end
-        if (GA.Survivor == 0)
+        if (GA.Survivor == 0) %age based selection
           random = randi([GA.Pop_size* GA.Elite_ratio+1, 50], [1, GA.Pop_size* GA.Elite_ratio]); %choose random childern to survive for the next the Generation
           for i = 1: Robot.number
           GA.Population{i}(:,:,j) = GA.Population_int{i}(:,:,random(j)); %add the survivor members to the top of the new population
@@ -64,16 +62,25 @@ for k = 1: GA.Num_Generations  % for number of generations
         end
     end
     
+    %Generate the new children
+    GA = Parents_selection(GA,R,indexes);%parents selection
+    GA = Generate_offspring(GA,Robot,R,C); % Call Generating offspring
+    GA = Mutation(GA,Mut,Robot,Map); %do mutation for the weak chromosomes
+    
     %Calculate the fitness for each chromosome
     GA = fitness_calculation(GA,Robot,Map,Controller); 
     
     %Data Storage
-    History{k} = GA; %story each GA with all its information in the History
     [Best,indx] = sort(GA.Fitness); %get the best fitness of each population
     for i = 1:Robot.number
-    GA.best{k}(:,:,i) = GA.Population{i}(:,:,indx(1)); %store the chromosomes with the best fitness value
+    Best_chromosomes{k}(:,:,i) = GA.Population{i}(:,:,indx(1)); %store the chromosomes with the best fitness value
+    GA.best = GA.Population{i}(:,:,indx(1));
+    Best_Fitness = Best(1);
+    GA.best_fitness = Best_Fitness;
     end
+    History{k} = GA; %story each GA with all its information in the History
     
+    %visualize
 end   
     
     
