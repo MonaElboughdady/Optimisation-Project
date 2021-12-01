@@ -46,9 +46,6 @@ for k = 1: GA.Num_Generations  % for number of generations
     GA.Mutation_index = indexes ( (1- GA.Mutation_ratio)* GA.Pop_size+1 : GA.Pop_size); % get the index of the the desired chromosomes to be mutated
     GA.Fitness_sum = sum(GA.Fitness); %summation of the fitness vector
     GA.parents_index = zeros(1,R); % an array of selected parents location on the population
-    GA = Parents_selection(GA,R,indexes);%parents selection
-    GA = Generate_offspring(GA,Robot,R,C); % Call Generating offspring
-    GA = Mutation(GA,Mut,Robot,Map); %do mutation for the weak chromosomes
     
     %Add the survivors
     for j = 1: GA.Pop_size* GA.Elite_ratio
@@ -64,6 +61,11 @@ for k = 1: GA.Num_Generations  % for number of generations
           end
         end
     end
+    
+    %Generate the new children
+    GA = Parents_selection(GA,R,indexes);%parents selection
+    GA = Generate_offspring(GA,Robot,R,C); % Call Generating offspring
+    GA = Mutation(GA,Mut,Robot,Map); %do mutation for the weak chromosomes
     
     %Calculate the fitness for each chromosome
     GA = fitness_calculation(GA,Robot,Map,Controller); 
