@@ -1,6 +1,6 @@
 %% Initialize the optimization problem parameters:
-GA.Num_Generations = 5;  %maximum number of generations to be tested
-GA.Pop_size = 50;  %the population size
+GA.Num_Generations = 100;  %maximum number of generations to be tested
+GA.Pop_size = 100;  %the population size
 GA.Elite_ratio = 0.1;  %percentage of survivors
 GA.CrossOver_ratio = 0.3; %percentage of cross over processes
 GA.Mutation_ratio = 1 - GA.Elite_ratio - GA.CrossOver_ratio; %the rest of mutation ratio
