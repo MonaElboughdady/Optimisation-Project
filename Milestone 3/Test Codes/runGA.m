@@ -79,7 +79,8 @@ for k = 1: GA.Num_Generations  % for number of generations
     GA.best_fitness = Best_Fitness;
     end
     History{k} = GA; %story each GA with all its information in the History
-
+    
+    %visualize
 end   
     
     
