@@ -1,15 +1,15 @@
 %% Initialize the optimization problem parameters:
-GA.Num_Generations = 2;  %maximum number of generations to be tested
+GA.Num_Generations = 5;  %maximum number of generations to be tested
 GA.Pop_size = 50;  %the population size
-GA.Elite_ratio = 0.1;  %percentage of elitism
+GA.Elite_ratio = 0.1;  %percentage of survivors
 GA.CrossOver_ratio = 0.3; %percentage of cross over processes
 GA.Mutation_ratio = 1 - GA.Elite_ratio - GA.CrossOver_ratio; %the rest of mutation ratio
 GA.Alpha = 0.7;  %alpha used for cross over process to generate new children
 GA.Noise_Scale = 0.1;  %Used for mutation to add noise around specific genes, number from [0 to 1]
 GA.Fitness = zeros(1,GA.Pop_size); %initaialize an empty fitness matrix
 GA.Roulette = 0;% Roulette wheel selection on and off
-GA.SUS = 1;  % Stochastic universial sampiling on and off
-GA.TS = 0; %Tournament selection on and off
+GA.SUS = 0;  % Stochastic universial sampiling on and off
+GA.TS = 1; %Tournament selection on and off
 GA.K = 5; %the number of randomaly selected chromosoms in tournament selection
 GA.Rank = 0; %Rank selection on and off
 GA.Survivor = 1; % if 1 do fitness based selection, if 0 do Age based selection
@@ -20,6 +20,9 @@ if rem(R,2) == 1 %check if R is odd number
 R = R+1;
 end
 Mut = GA.Mutation_ratio * GA.Pop_size; %define the number of the desires mutations
+History = cell(GA.Num_Generations,1); %initialize an empty array of cells 
+Best_chromosomes = cell(GA.Num_Generations,1); %initialize an empty array of cells
+Best_Fitness = zeros(GA.Num_Generations,1); %initialize an empty array to store the fitnesses
 %% Initial step:
 % Generate a random solution
 GA.Population_int = cell(1,Robot.number);% initialize a matrix of initial population 
@@ -35,7 +38,6 @@ end
 %Calculate the fitness for first iteration
 GA.Population = GA.Population_int; %initialize the population as equal to population initial
 GA = fitness_calculation(GA,Robot,Map,Controller);
-  
 %% Iterations
 for k = 1: GA.Num_Generations  % for number of generations
     GA.Population_int = GA.Population; %update the previous population to the current population
@@ -55,19 +57,27 @@ for k = 1: GA.Num_Generations  % for number of generations
           GA.Population{i}(:,:,j) = GA.Population_int{i}(:,:,GA.Elite_index(j)); %add the elite members to the top of the new population
             end   
         end
-%         if (GA.Survivor == 0)
-%             
-%         end
+        if (GA.Survivor == 0)
+          random = randi([GA.Pop_size* GA.Elite_ratio+1, 50], [1, GA.Pop_size* GA.Elite_ratio]); %choose random childern to survive for the next the Generation
+          for i = 1: Robot.number
+          GA.Population{i}(:,:,j) = GA.Population_int{i}(:,:,random(j)); %add the survivor members to the top of the new population
+          end
+        end
     end
     
     %Calculate the fitness for each chromosome
     GA = fitness_calculation(GA,Robot,Map,Controller); 
     
-    %calculate the age
-    GA = Age_calculation(Robot,GA);
-    
-    
-    
+    %Data Storage
+    [Best,indx] = sort(GA.Fitness); %get the best fitness of each population
+    for i = 1:Robot.number
+    Best_chromosomes{k}(:,:,i) = GA.Population{i}(:,:,indx(1)); %store the chromosomes with the best fitness value
+    GA.best = GA.Population{i}(:,:,indx(1));
+    Best_Fitness = Best(1);
+    GA.best_fitness = Best_Fitness;
+    end
+    History{k} = GA; %story each GA with all its information in the History
+
 end   
     
     
