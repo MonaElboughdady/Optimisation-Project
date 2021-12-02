@@ -75,8 +75,8 @@ for k = 1: GA.Num_Generations  % for number of generations
     for i = 1:Robot.number
     Best_chromosomes{k}(:,:,i) = GA.Population{i}(:,:,indx(1)); %store the chromosomes with the best fitness value
     GA.best = GA.Population{i}(:,:,indx(1));
-    Best_Fitness = Best(1);
-    GA.best_fitness = Best_Fitness;
+    Best_Fitness(1,k) = Best(1);
+    GA.best_fitness = Best(1);
     end
     History{k} = GA; %story each GA with all its information in the History
     
