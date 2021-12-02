@@ -81,7 +81,7 @@ for k = 1: GA.Num_Generations  % for number of generations
     History{k} = GA; %story each GA with all its information in the History
     
     %visualize
-    GA_Visualization(GA,Robot,Controller,Map)
+    %GA_Visualization(GA,Robot,Controller,Map)
 end   
     
     
