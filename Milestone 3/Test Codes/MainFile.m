@@ -1,4 +1,3 @@
-%This is the main file code to run the Simulated Annealing (SA)
 %optimization algorithm in solving the problem of Multi robot path planning
 %for dynamic formation application previously "Multi robot flocking control"
 %several tunable parameters can be changed to check their effect.
@@ -52,4 +51,4 @@ Map.locationofObstacles = [30 37 30
                            30 38 50]; % X and Y of each obstacle
 Map.c = 3; %Clearance for OA (cm)
 
-runSA
+runGA

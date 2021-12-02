@@ -1,9 +1,11 @@
-function Parents_selection(GA,R,indexes)
+function GA = Parents_selection(GA,R,indexes)
 %% Initialization for Fitness propotionate selection
         probability = zeros(1,GA.Pop_size); % define an array for the probability of each chromosom
         Q = zeros(1,GA.Pop_size);
+        Fitness = 1./GA.Fitness;
+        Fitness_sum = sum(Fitness);
         for count = 1 : GA.Pop_size %for the size of population
-        probability(1,count) = 1-(GA.Fitness(count)/GA.Fitness_sum); %P(count) = the probability of solution count'th
+        probability(1,count) = (Fitness(count)/Fitness_sum); %P(count) = the probability of solution count'th
         Q(count) = sum(probability); %Q(count) = cumulative probability of the count'th solution
         end
    
@@ -25,30 +27,33 @@ function Parents_selection(GA,R,indexes)
     end
 %% SUS selection
     if(GA.SUS == 1)
-            random = rand(1,R); %generate a random number each iteration till R times in the same time
+        Pointer = rand(1); %generate a random number each iteration till R times in the same time
         %If Rand is less than Q1, the first solution (X1) is selected; otherwise the jth solution 
         %is selected such that Rand is greater than Qj‐1 and less or equal than Qj (Qj 1 Rand Qj).
+        SUS_IND = 1/R;
          for i = 1 : R
-            if (random(i) < Q(1))
+            if (Pointer < Q(1))
                GA.parents_index(i) = 1; 
             end
             for j = 2 : GA.Pop_size
-                if((Q(j-1)<random(i)) && (Q(j)>=random(i)))
+                if((Q(j-1)<Pointer) && (Q(j)>=Pointer))
                    GA.parents_index(i) = j; 
                 end
             end
+            Pointer = Pointer + SUS_IND;
          end
     end
     
 %% Tournament selection
-    if(GA.TS == 1)
-        random_array = zeros(1,GA.k);
-        random_indexes = randi([1,GA.Pop_size],[1,GA.k]); % get k random chromosoms to compare in a tournament
+     if(GA.TS == 1)
+        GA.random_array = zeros(1,GA.K);  
         for j = 1:R %for number of required parents
-        for i = 1:GA.k % for the K as is the number of randomaly selected chromosoms
-           random_array(i) = GA.Fitness(random_indexes(i)); 
-        end
-        [M,I] = min(random_array); % get the index of the minimum fitness value and store in I
+            GA.random_indexes = randi([1,GA.Pop_size],[1,GA.K]); % get k random chromosoms to compare in a tournament
+            for i = 1:GA.K % for the K as is the number of randomaly selected chromosoms
+           GA.random_array(i) = GA.Fitness(GA.random_indexes(i)); 
+            end
+        [M,I] = min(GA.random_array); % get the index of the minimum fitness value and store in I
+         I = GA.random_indexes(I);
         GA.parents_index(j) = I; %store the index of the best parent 
         end 
     end
