@@ -11,6 +11,13 @@ end
 dist = 0;
 obsdist = 0;
 [M,N,O] = size(pos);
+%% for normalization
+distNorm = sum(sum(cellfun(@norm,num2cell(Robot.initPosition - 100*ones(Robot.number,2),2)) + cellfun(@norm,num2cell(Map.goals - 100*ones(Robot.number,2),2)) + norm(Map.size) * ones(Robot.number,2)));
+[~,posSize,~] = size(pos);
+[~,velSize,~] = size(vel);
+cohesionNorm = Robot.number * posSize * (norm(Map.size)-Robot.rf);
+velSet = [Controller.desiredLinearVelocity .* ones(1,ceil(Robot.number/2)) zeros(1,floor(Robot.number/2))];
+stdNorm = std(velSet);
 %% calculate the distance between each robot and all the successive robots
 for i = 1:Robot.number %Loop over each robot
     if(i>1) 
@@ -28,31 +35,33 @@ for i = 1:Robot.number %Loop over each robot
         end
      end
    end 
-end 
+end
+normalizedCohesionCost = cohesionCost/cohesionNorm;
 %% Calculate the standard diviation for vx and vy
 cell_x = num2cell(Matrix_vx',2);
 cell_y = num2cell(Matrix_vy',2);
-div_x = cellfun(@std,cell_x);
-div_y = cellfun(@std,cell_y);
-summdiv_x = sum(div_x);
-summdiv_y = sum(div_y);
-
+div_x = cellfun(@std,cell_x)./stdNorm;
+div_y = cellfun(@std,cell_y)./stdNorm;
+summdiv_x = sum(div_x)/velSize;
+summdiv_y = sum(div_y)/velSize;
+normalizedStdDeviation = 0.5*summdiv_x + 0.5*summdiv_y;
 %% calculate the length of each robot path
 for i = 1:Robot.number
     for j = 1:Map.numberofPathsPoints-1
         dist = dist + norm(Controller.controllers{1,i}.Waypoints(j,:)-Controller.controllers{1,i}.Waypoints(j+1,:)); 
     end
 end
-
+normalizedDist = dist/distNorm;
 %% get the distance between each robot and the obstacle and get the summation of all of it
 for i = 1:Robot.number
     for j = 1:N
         [distance,index] = closestObstacle(Map,Robot,pos(1:2,N,i));
-        obsdist = obsdist + (distance - (Robot.originalRobotKinematics.TrackWidth + Map.radiusofObstacles(index)) - c);
+        obsdist = (obsdist + ((distance - (Robot.originalRobotKinematics.TrackWidth + Map.radiusofObstacles(index)) - c)/(Map.farthestPointFromObstacle(index)-(Robot.originalRobotKinematics.TrackWidth + Map.radiusofObstacles(index)) - c)))/2;
     end
 end
 %% calculate the cost function by adding up all the objective functions  
-cost = -1 * obsdist + dist + summdiv_x + summdiv_y + cohesionCost;
+% cost = 0 * -1 * obsdist + 100 * dist + 0 * summdiv_x + 0 * summdiv_y + cohesionCost;
+cost = 1 * normalizedDist + 2 * normalizedCohesionCost + 1 * normalizedStdDeviation + -10 * obsdist;
 
 %% Draft
 % function [cost] = calculateCostFunction(pos,Robot)

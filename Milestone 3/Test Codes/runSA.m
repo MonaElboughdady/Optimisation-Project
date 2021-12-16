@@ -1,6 +1,6 @@
 %Simulated Annealing Algorithm
 %Initialize SA Parameters
-SA.maxNumofIterations = 1000; %Max number of iterations
+SA.maxNumofIterations = 100; %Max number of iterations
 SA.initTemperature = 5000; %Initial Temperature
 SA.finalTemperature = 1; %Final Temperature
 SA.currentTemperature = SA.initTemperature; %Current Temperature 

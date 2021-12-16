@@ -1,6 +1,6 @@
 %This function is mainly used for calculating kinematics it's no longer used
 %for visualiztion so the visualize flag is always set to false
-function [posArray,velArray,failed] = simulateKinematicsnew(Robot,Controller,Map,visualize)
+function [posArray,velArray,failed] = simulateKinematicsoptimized(Robot,Controller,Map,visualize)
 
 failed = false;
 sampleTime = Controller.sampleTime;
@@ -72,28 +72,26 @@ for i = 1:Robot.number
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     if(i > 1)%this code pads the pos and vel arrays to have the same size as new or old arrays pos is concatenated with the last element and vel is padded with zeros
-        [~,N] = size(posTemp);
-        [~,Q] = size(posArray(:,:,i-1));
+        [M,N] = size(posTemp);
+        [P,Q] = size(posArray(:,:,i-1));
         if(N < Q)
             for j = 1:Q-N
                 posTemp = [posTemp posTemp(:,end)];
             end
         elseif(N > Q)
-            for k = i:-1:2
-                for j = 1:N-Q
-                    posArray(:,Q+j,k-1) = posArray(:,Q,k-1);
-                end
+            for j = 1:N-Q
+                posArray(:,end+1,i-1) = posArray(:,end,i-1);
             end
         end
+        [M,N] = size(velTemp);
+        [P,Q] = size(velArray(:,:,i-1));
         if(N < Q)
             for j = 1:Q-N
-                velTemp = [velTemp [0 0 0]'];
+                velTemp = [velTemp velTemp(:,end)];
             end
         elseif(N > Q)
-            for k = i:-1:2
-                for j = 1:N-Q
-                    velArray(:,Q+j,k-1) = [0 0 0]';
-                end
+            for j = 1:N-Q
+                velArray(:,end+1,i-1) = velArray(:,end,i-1);
             end
         end
     end
