@@ -46,9 +46,9 @@ Map.waypointRadius = 10; %Radius of each waypoint (cm)
 Map.goalRadius = 2; %Radius of the goal (cm)
 Map.size = [100 100]; %Xmax and Ymax of the map [m m]
 Map.numberofObstacles = 3; %Number of obstacles
-Map.radiusofObstacles = [5 7 20]; %Different Radii for obstacles
+Map.radiusofObstacles = [1.5 2.5 4.5]; %Different Radii for obstacles
 Map.locationofObstacles = [30 35 30
-    30 36 50]; % X and Y of each obstacle
+                           30 36 50]; % X and Y of each obstacle
 Map.c = 3; %Clearance for OA (cm)
 Map.farthestPointFromObstacle = [];
 for i = 1:Map.numberofObstacles

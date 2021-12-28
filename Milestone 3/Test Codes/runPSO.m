@@ -1,12 +1,12 @@
-PSO.w = 0.7;
+PSO.w = 0.8;
 PSO.c1 = 1.49;
 PSO.c2 = 1.49;
 PSO.r1 = 0.1;
 PSO.r2 = 0.2;
 PSO.fixedWeight = true;
 PSO.topology = 1; %star topology 2: ring topolgy 3:four clusters 4:von neumann
-PSO.populationSize = 50;
-PSO.maxNumofIterations = 50;
+PSO.populationSize = 1000;
+PSO.maxNumofIterations = 20;
 PSO.fitness = zeros(1,PSO.populationSize);
 PSO.initVelocities = cell(1,PSO.populationSize);
 for i = 1:PSO.populationSize
@@ -48,9 +48,9 @@ for n = 1:PSO.maxNumofIterations
             globalBestWaypoints = cell2mat(cellfun(@(c) [c.Waypoints],PSO.globalBest.controller,'UniformOutput',false));
             vector1 = personalBestWaypoints - currentWaypoints;
             vector2 = globalBestWaypoints - currentWaypoints;
-            r1 = rand;r2 = rand;
+            PSO.r1 = rand;PSO.r2 = rand;
             PSO.currentVelocity{1,i} = PSO.w .* reshape(PSO.previousVelocity{1,i},Map.numberofPathsPoints,2*Robot.number) + PSO.c1 .* PSO.r1 .* vector1 + PSO.c2 .* PSO.r2 .* vector2;
-            newWaypoints = currentWaypoints +  PSO.currentVelocity{1,i};
+            newWaypoints = min(max(currentWaypoints +  PSO.currentVelocity{1,i} , 0),Map.size(1));
             for j = 1:Robot.number
                 PSO.population(i).controller{1,j}.Waypoints = newWaypoints(:,2*j-1:2*j);
             end
@@ -120,5 +120,5 @@ for n = 1:PSO.maxNumofIterations
     end
     Controller.controllers = PSO.population(I).controller(1,:);
     PSO.bestFitnesses(n) = best;
-    Figures = plotPathsPSO(Figures,Robot,Map,pos,PSO);
+    % Figures = plotPathsPSO(Figures,Robot,Map,pos,PSO);
 end

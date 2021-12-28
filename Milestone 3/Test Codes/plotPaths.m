@@ -20,7 +20,7 @@ nexttile
 plot(SA.costs)
 legend("Cost")
 xlim([0 SA.maxNumofIterations])
-ylim([-2e5 2e5])
+ylim([-1 5])
 pbaspect([1 1 1])
 title('Cost')
 nexttile

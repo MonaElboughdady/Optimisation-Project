@@ -87,10 +87,10 @@ for j = 1:N
         path = Controller.controllers{1,i}.Waypoints;
         plot(path(:,1), path(:,2),"k--d")
     end
-    
+    axis square
     for i = 1:Map.numberofObstacles
         path = Controller.controllers{1,i}.Waypoints;
-        plot(Map.locationofObstacles(1,i), Map.locationofObstacles(2,i), 'bo', 'MarkerSize', Map.radiusofObstacles(i))
+        viscircles([Map.locationofObstacles(1,i) Map.locationofObstacles(2,i)],Map.radiusofObstacles(i));
     end
     
     hold all
