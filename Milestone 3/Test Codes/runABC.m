@@ -1,11 +1,11 @@
 %Artificial Bee Colony (ABC) algorithm
 %%Initialize ABC parameters
-ABC.maxNumberOfIterations = 10; %Max number of iterations
-ABC.colonySize = 20;  %the population size
-ABC.limit = 3; %The max trials limit while exploiting on a solution
-ABC.a = 10;
-ABC.OnlookerBeesNumber = 10;
-ABC.minScoutBees = 1;
+ABC.maxNumberOfIterations = 100; %Max number of iterations
+ABC.colonySize = 1000;  %the population size
+ABC.limit = 7; %The max trials limit while exploiting on a solution
+ABC.a = 5;
+ABC.OnlookerBeesNumber = 500;
+ABC.minScoutBees = 20;
 %%Initialization Phase
 %Starting by generating random paths for the robots
 for j = 1:ABC.colonySize
@@ -43,6 +43,7 @@ for n = 1:ABC.maxNumberOfIterations
         currentWaypoints = cell2mat(cellfun(@(c) [c.Waypoints],ABC.population(j).controller,'UniformOutput',false));
         randomWaypoints = cell2mat(cellfun(@(c) [c.Waypoints],ABC.population(ceil(rand*ABC.colonySize)).controller,'UniformOutput',false));
         suggestedWaypoints = currentWaypoints + (-ABC.a + 2 * ABC.a *rand) * (currentWaypoints-randomWaypoints);
+        suggestedWaypoints = min(max(suggestedWaypoints, 0),Map.size(1));
         for i = 1:Robot.number
             ABC.suggestedPopulation(j).controller{1,i}.Waypoints = suggestedWaypoints(:,2*i-1:2*i);
         end
@@ -68,6 +69,7 @@ for n = 1:ABC.maxNumberOfIterations
                 currentWaypoints = cell2mat(cellfun(@(c) [c.Waypoints],ABC.population(I(i)).controller,'UniformOutput',false));
                 randomWaypoints = cell2mat(cellfun(@(c) [c.Waypoints],ABC.population(ceil(rand*ABC.colonySize)).controller,'UniformOutput',false));
                 suggestedWaypoints = currentWaypoints + (-ABC.a + 2 * ABC.a *rand) * (currentWaypoints-randomWaypoints);
+                suggestedWaypoints = min(max(suggestedWaypoints, 0),Map.size(1));
                 for k = 1:Robot.number
                     ABC.OnlookerSuggestedSolution.controller{1,k}.Waypoints = suggestedWaypoints(:,2*k-1:2*k);
                 end
