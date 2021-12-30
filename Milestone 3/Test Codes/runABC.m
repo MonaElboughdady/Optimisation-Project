@@ -1,11 +1,12 @@
 %Artificial Bee Colony (ABC) algorithm
 %%Initialize ABC parameters
 ABC.maxNumberOfIterations = 100; %Max number of iterations
-ABC.colonySize = 1000;  %the population size
-ABC.limit = 7; %The max trials limit while exploiting on a solution
+ABC.colonySize = 10;  %the population size
+ABC.limit = 3; %The max trials limit while exploiting on a solution
 ABC.a = 5;
-ABC.OnlookerBeesNumber = 500;
-ABC.minScoutBees = 20;
+ABC.OnlookerBeesNumber = 5;
+ABC.minScoutBees = 1;
+ABC.bestSolutionFitness = inf;
 %%Initialization Phase
 %Starting by generating random paths for the robots
 for j = 1:ABC.colonySize
@@ -37,7 +38,7 @@ ABC.abandonmentCounter = zeros(1,ABC.colonySize);
 ABC.populationProbability = zeros(1,ABC.colonySize);
 %%Iterate
 for n = 1:ABC.maxNumberOfIterations
-%Employed Bees Phase
+    %Employed Bees Phase
     %Searching for New Food Sources
     for j = 1:ABC.colonySize
         currentWaypoints = cell2mat(cellfun(@(c) [c.Waypoints],ABC.population(j).controller,'UniformOutput',false));
@@ -59,9 +60,9 @@ for n = 1:ABC.maxNumberOfIterations
             ABC.abandonmentCounter(j) = 0;
         else
             ABC.abandonmentCounter(j) = ABC.abandonmentCounter(j) + 1;
-        end 
+        end
     end
-%Onlooker Bees Phase
+    %Onlooker Bees Phase
     [ABC.populationProbability, I] = ABC_calculateProbabilities(ABC.fitness,ABC.colonySize);
     for j = 1:ABC.OnlookerBeesNumber
         for i = 1:ABC.colonySize
@@ -86,10 +87,10 @@ for n = 1:ABC.maxNumberOfIterations
                 end
                 break
             end
-        end    
+        end
     end
-%Scout Bees Phase
-ScoutBeesCount = 0;
+    %Scout Bees Phase
+    ScoutBeesCount = 0;
     for j = 1:ABC.colonySize
         if(ABC.abandonmentCounter(j) >= ABC.limit)
             for i = 1:Robot.number
@@ -118,4 +119,17 @@ ScoutBeesCount = 0;
         ABC.abandonmentCounter(k(1)) = 0;
         ScoutBeesCount = ScoutBeesCount + 1;
     end
+    [best,I] = min(ABC.fitness);
+    %
+    ABC.bestSolutions(n) = ABC.population(I);
+    ABC.bestFitnesses(n) = best;
+    if(best < ABC.bestSolutionFitness)
+        ABC.bestSolutionFitness = best;
+        ABC.bestSolution = ABC.population(I);
+    end
+    Controller.controllers = ABC.bestSolution.controller(1,:);
+    disp(ABC.bestSolutionFitness);
+    disp("Iteration");
+    disp(n)
+    
 end
