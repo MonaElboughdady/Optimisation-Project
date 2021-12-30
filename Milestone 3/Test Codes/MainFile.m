@@ -63,4 +63,4 @@ Figures.runningFigure.WindowState = 'maximized';
 Figures.trajectory = gobjects(1,Robot.number);
 Figures.fitness = gobjects(1);
 
-runPSO
+runABC
