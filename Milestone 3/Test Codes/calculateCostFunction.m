@@ -61,7 +61,7 @@ for i = 1:Robot.number
 end
 %% calculate the cost function by adding up all the objective functions  
 % cost = 0 * -1 * obsdist + 100 * dist + 0 * summdiv_x + 0 * summdiv_y + cohesionCost;
-cost = 1 * normalizedDist + 2 * normalizedCohesionCost + 1 * normalizedStdDeviation + -10 * obsdist;
+cost = 10 * normalizedDist + 0 * normalizedCohesionCost + 0 * normalizedStdDeviation + 0 * obsdist;
 
 %% Draft
 % function [cost] = calculateCostFunction(pos,Robot)

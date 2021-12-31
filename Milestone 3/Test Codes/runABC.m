@@ -2,8 +2,8 @@
 %%Initialize ABC parameters
 ABC.maxNumberOfIterations = 100; %Max number of iterations
 ABC.colonySize = 10;  %the population size
-ABC.limit = 3; %The max trials limit while exploiting on a solution
-ABC.a = 5;
+ABC.limit = 10; %The max trials limit while exploiting on a solution
+ABC.a = 1;
 ABC.OnlookerBeesNumber = 5;
 ABC.minScoutBees = 1;
 ABC.bestSolutionFitness = inf;
@@ -34,30 +34,37 @@ for j = 1:ABC.colonySize
     [pos,vel] = simulateKinematicsnew(Robot,Controller,Map,false);
     ABC.fitness(j) = calculateCostFunction(pos,vel,Robot,Map,Controller,Robot.rf,Map.c);
 end
+ABC.bestPos = pos;
+[~,z] = min(ABC.fitness);
 ABC.abandonmentCounter = zeros(1,ABC.colonySize);
 ABC.populationProbability = zeros(1,ABC.colonySize);
+suggestedWaypoints = zeros(Map.numberofPathsPoints,Robot.number*2);
 %%Iterate
 for n = 1:ABC.maxNumberOfIterations
     %Employed Bees Phase
     %Searching for New Food Sources
     for j = 1:ABC.colonySize
         currentWaypoints = cell2mat(cellfun(@(c) [c.Waypoints],ABC.population(j).controller,'UniformOutput',false));
-        randomWaypoints = cell2mat(cellfun(@(c) [c.Waypoints],ABC.population(ceil(rand*ABC.colonySize)).controller,'UniformOutput',false));
-        suggestedWaypoints = currentWaypoints + (-ABC.a + 2 * ABC.a *rand) * (currentWaypoints-randomWaypoints);
-        suggestedWaypoints = min(max(suggestedWaypoints, 0),Map.size(1));
+        for i = 1:(Map.numberofPathsPoints)
+            tempRandomWaypoints = cell2mat(cellfun(@(c) [c.Waypoints],ABC.population(ceil(rand*ABC.colonySize)).controller,'UniformOutput',false));    
+            suggestedWaypoints(i,:) = currentWaypoints(i,:) + (-ABC.a + 2 * ABC.a *rand) * (currentWaypoints(i,:)-tempRandomWaypoints(i,:));
+        end
+%         suggestedWaypoints = currentWaypoints + (-ABC.a + 2 * ABC.a *rand) * (currentWaypoints-randomWaypoints);
+         suggestedWaypoints = min(max(suggestedWaypoints, 0),Map.size(1));
         for i = 1:Robot.number
             ABC.suggestedPopulation(j).controller{1,i}.Waypoints = suggestedWaypoints(:,2*i-1:2*i);
         end
         Controller.controllers = ABC.suggestedPopulation(j).controller(1,:);
         [pos,vel] = simulateKinematicsnew(Robot,Controller,Map,false);
         ABC.suggestedFitness(j) = calculateCostFunction(pos,vel,Robot,Map,Controller,Robot.rf,Map.c);
-    end
-    newBestIndices = (ABC.suggestedFitness - ABC.fitness) < 0;
-    for j = 1:ABC.colonySize
-        if newBestIndices(j) == 1
+        if(ABC.suggestedFitness(j) - ABC.fitness(j)<0)
             ABC.population(j) = ABC.suggestedPopulation(j);
             ABC.fitness(j) = ABC.suggestedFitness(j);
             ABC.abandonmentCounter(j) = 0;
+            if(ABC.fitness(j)<ABC.fitness(z))
+                ABC.bestPos = pos;
+                z = j;
+            end
         else
             ABC.abandonmentCounter(j) = ABC.abandonmentCounter(j) + 1;
         end
@@ -67,10 +74,13 @@ for n = 1:ABC.maxNumberOfIterations
     for j = 1:ABC.OnlookerBeesNumber
         for i = 1:ABC.colonySize
             if(ABC.populationProbability(i)>rand)
-                currentWaypoints = cell2mat(cellfun(@(c) [c.Waypoints],ABC.population(I(i)).controller,'UniformOutput',false));
-                randomWaypoints = cell2mat(cellfun(@(c) [c.Waypoints],ABC.population(ceil(rand*ABC.colonySize)).controller,'UniformOutput',false));
-                suggestedWaypoints = currentWaypoints + (-ABC.a + 2 * ABC.a *rand) * (currentWaypoints-randomWaypoints);
-                suggestedWaypoints = min(max(suggestedWaypoints, 0),Map.size(1));
+                currentWaypoints = cell2mat(cellfun(@(c) [c.Waypoints],ABC.population(j).controller,'UniformOutput',false));
+                for k = 1:(Map.numberofPathsPoints)
+                    tempRandomWaypoints = cell2mat(cellfun(@(c) [c.Waypoints],ABC.population(ceil(rand*ABC.colonySize)).controller,'UniformOutput',false));
+                    suggestedWaypoints(k,:) = currentWaypoints(k,:) + (-ABC.a + 2 * ABC.a *rand) * (currentWaypoints(k,:)-tempRandomWaypoints(k,:));
+                end
+%                 suggestedWaypoints = currentWaypoints + (-ABC.a + 2 * ABC.a *rand) * (currentWaypoints-randomWaypoints);
+                 suggestedWaypoints = min(max(suggestedWaypoints, 0),Map.size(1));
                 for k = 1:Robot.number
                     ABC.OnlookerSuggestedSolution.controller{1,k}.Waypoints = suggestedWaypoints(:,2*k-1:2*k);
                 end
@@ -81,6 +91,10 @@ for n = 1:ABC.maxNumberOfIterations
                     ABC.population(I(i)) = ABC.OnlookerSuggestedSolution;
                     ABC.fitness(I(i)) = ABC.OnlookerSuggestedFitness;
                     ABC.abandonmentCounter(I(i)) = 0;
+                    if(ABC.fitness(I(i))<ABC.fitness(z))
+                        ABC.bestPos = pos;
+                        z = I(i);
+                    end
                     [ABC.populationProbability, I] = ABC_calculateProbabilities(ABC.fitness,ABC.colonySize);
                 else
                     ABC.abandonmentCounter(I(i)) = ABC.abandonmentCounter(I(i)) + 1;
@@ -103,6 +117,10 @@ for n = 1:ABC.maxNumberOfIterations
             ABC.fitness(j) = calculateCostFunction(pos,vel,Robot,Map,Controller,Robot.rf,Map.c);
             ABC.abandonmentCounter(j) = 0;
             ScoutBeesCount = ScoutBeesCount + 1;
+            if(ABC.fitness(j)<ABC.fitness(z))
+                ABC.bestPos = pos;
+                z = j;
+            end
         end
     end
     
@@ -118,6 +136,10 @@ for n = 1:ABC.maxNumberOfIterations
         ABC.fitness(k(1)) = calculateCostFunction(pos,vel,Robot,Map,Controller,Robot.rf,Map.c);
         ABC.abandonmentCounter(k(1)) = 0;
         ScoutBeesCount = ScoutBeesCount + 1;
+        if(ABC.fitness(k(1))<ABC.fitness(z))
+            ABC.bestPos = pos;
+            z = j;
+        end
     end
     [best,I] = min(ABC.fitness);
     %
@@ -131,5 +153,5 @@ for n = 1:ABC.maxNumberOfIterations
     disp(ABC.bestSolutionFitness);
     disp("Iteration");
     disp(n)
-    
+    Figures = plotPathsABC(Figures,Robot,Map,ABC.bestPos,ABC);
 end
